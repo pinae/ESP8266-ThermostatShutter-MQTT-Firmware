@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <Adafruit_Sensor.h>
 #include <DHT.h>
 #include <DHT_U.h>
@@ -172,7 +173,7 @@ char* temperatureDataToJson(unsigned short offset) {
   int i;
   unsigned short j;
   unsigned short CHUNK_SIZE = 16;
-  char* json = (char*) malloc(3 + (CHUNK_SIZE-1) + CHUNK_SIZE * 34);
+  char* json = (char*) calloc(3 + (CHUNK_SIZE-1) + CHUNK_SIZE * 34, sizeof(char));
   for (i = 0; i < (2 + (CHUNK_SIZE-1) + CHUNK_SIZE * 34); i++) {
     strncpy(json+i, " ", 1);
   }

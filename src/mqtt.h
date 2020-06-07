@@ -16,3 +16,4 @@ struct MqttMessageList {
 
 void mqttSetup();
 void publishToMqtt(char* topic, char* payload);
+void sendLoggedData(unsigned int delta_t);

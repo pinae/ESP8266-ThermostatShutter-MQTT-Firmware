@@ -33,13 +33,23 @@ void setUpConfig() {
     EEPROM.begin(CONFIG_LEN);
     EEPROM.get(EEPROM_ADDR, configData);
     wifiManager.setSaveConfigCallback(saveConfigCallback);
-    WiFiManagerParameter custom_mqtt_server("mqttServer", "MQTT Server", configData.mqttServer, MQTT_SERVER_STRLEN);
+
+    WiFiManagerParameter custom_mqtt_server("mqttServer", "MQTT Server", 
+                                            configData.mqttServer, MQTT_SERVER_STRLEN);
     wifiManager.addParameter(&custom_mqtt_server);
-    char mqttPortStr[10];
+    char mqttPortStr[10] = {'\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0'};
     sprintf(mqttPortStr, "%lu", configData.mqttPort);
     WiFiManagerParameter custom_mqtt_port("mqttPort", "MQTT Port", mqttPortStr, 10);
     wifiManager.addParameter(&custom_mqtt_port);
+    WiFiManagerParameter custom_mqtt_username("mqttUsername", "MQTT Username", 
+                                              configData.mqttUsername, MQTT_USERNAME_STRLEN);
+    wifiManager.addParameter(&custom_mqtt_username);
+    WiFiManagerParameter custom_mqtt_password("mqttPassword", "MQTT Password", 
+                                              configData.mqttPassword, MQTT_PASSWORD_STRLEN);
+    wifiManager.addParameter(&custom_mqtt_password);
+
     wifiManager.autoConnect(getDeviceName(), "loving_ct");
+
     strncpy(configData.mqttServer, custom_mqtt_server.getValue(), MQTT_SERVER_STRLEN);
     char** conversionErrorPos = 0;
     unsigned long convertedPort = strtoul(&mqttPortStr[0], conversionErrorPos, 10);
@@ -48,6 +58,8 @@ void setUpConfig() {
     } else {
         Serial.print("Error converting MQTT Port number: "); Serial.println(mqttPortStr);
     }
+    strncpy(configData.mqttUsername, custom_mqtt_username.getValue(), MQTT_USERNAME_STRLEN);
+    strncpy(configData.mqttPassword, custom_mqtt_password.getValue(), MQTT_PASSWORD_STRLEN);
     EEPROM.put(EEPROM_ADDR, configData);
     EEPROM.commit();
 
@@ -64,9 +76,17 @@ char* getDeviceName() {
 }
 
 char* getMqttServer() {
-    return &configData.mqttServer[0];
+    return &(configData.mqttServer)[0];
 }
 
 unsigned long getMqttPort() {
     return configData.mqttPort;
+}
+
+char* getMqttUsername() {
+    return &(configData.mqttUsername)[0];
+}
+
+char* getMqttPassword() {
+    return &(configData.mqttPassword)[0];
 }
